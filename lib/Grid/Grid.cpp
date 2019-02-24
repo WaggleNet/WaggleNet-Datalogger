@@ -25,6 +25,7 @@ void Grid::draw(int i)
     board->Lcd.fillRect(xPos,yPos,w-2,h-2,WHITE);
   }
   else {
+    board->Lcd.fillRect(xPos,yPos,w-2,h-2,BLACK);
     board->Lcd.drawRect(xPos,yPos,w-2,h-2,WHITE);
   }
 }
