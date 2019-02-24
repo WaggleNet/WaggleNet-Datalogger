@@ -2,19 +2,13 @@
 #include <M5Stack.h>
 #include <Grid.h>
 
-M5Stack main;
-Grid mainGrid(main);
-int i = 0;
+Grid mainGrid(&M5);
 
 void setup() {
-  main.begin();
-  main.Lcd.clearDisplay();
+  M5.begin();
+  M5.Lcd.clearDisplay();
+  mainGrid.begin();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly
-  mainGrid.begin();
-  main.Lcd.fillRect(300,i,10,5,RED);
-  i++;
-  delay(10);
 }

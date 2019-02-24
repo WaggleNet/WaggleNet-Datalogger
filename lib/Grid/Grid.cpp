@@ -1,7 +1,7 @@
 #include "Grid.h"
-#include <M5Stack.h>
+#include <stdlib.h>
 
-Grid::Grid(M5Stack& other)
+Grid::Grid(M5Stack* other)
 {
   block = 0;
   board = other;
@@ -11,7 +11,6 @@ void Grid::begin()
 {
   for (int i = 0; i < 6; i++) {
     draw(i);
-    board.update();
   }
 }
 
@@ -23,10 +22,10 @@ void Grid::draw(int i)
   int16_t h = 240/2;
 
   if (i == block) {
-    board.Lcd.fillRect(xPos,yPos,w-2,h-2,WHITE);
+    board->Lcd.fillRect(xPos,yPos,w-2,h-2,WHITE);
   }
   else {
-    board.Lcd.drawRect(xPos,yPos,w-2,h-2,WHITE);
+    board->Lcd.drawRect(xPos,yPos,w-2,h-2,WHITE);
   }
 }
 
