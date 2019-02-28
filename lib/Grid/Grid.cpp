@@ -5,23 +5,64 @@ Grid::Grid(M5Stack* other)
 {
   block = 0;
   board = other;
+  pages = 6;
+  pageNum = 0;
 }
 
 void Grid::begin()
 {
+  // Draw grid
   for (int i = 0; i < 6; i++) {
     draw(i);
   }
+
+  // Draw page indicators
+  for (int i = 0; i < pages; i++) {
+    int centerX = 316/2;
+    int centerY = 204;
+    int offset;
+
+    if(pages%2 == 1) {
+      offset = 20*(i-pages/2);
+    }
+    else {
+      offset = 20*(i-(pages-1)/2) - 10;
+    }
+
+    if (i == pageNum)
+      board->Lcd.fillCircle(centerX+offset,centerY,4,WHITE);
+    else {
+      board->Lcd.fillCircle(centerX+offset,centerY,4,BLACK);
+      board->Lcd.drawCircle(centerX+offset,centerY,4,WHITE);
+    }
+  }
+  
+  // Draw header and footer
+  board->Lcd.fillRect(0,0,316,28,WHITE);
+  board->Lcd.fillRect(0,211,316,30,WHITE);
+
+  // control markers
+  int centerX = 320/2;
+  int centerY = 225;
+  
+  // select button
+  board->Lcd.fillRect(centerX-8,centerY-8,16,16,BLACK);
+  board->Lcd.fillRect(centerX-8,centerY-8,16,16,BLACK);
+
+  // L/R buttons
+  board->Lcd.fillTriangle(centerX-80,centerY-8,centerX-80,centerY+8,centerX-90,centerY,BLACK);
+  board->Lcd.fillTriangle(centerX+80,centerY-8,centerX+80,centerY+8,centerX+90,centerY,BLACK);
 }
 
+// Draws a tile in the grid
 void Grid::draw(int i)
 {
   int16_t xPos = (320/3)*(i%3);
-  int16_t yPos = (240/2)*(i/3);
+  int16_t yPos = 30+(170/2)*(i/3);
   int16_t w = 320/3;
-  int16_t h = 240/2;
+  int16_t h = 170/2;
 
-  if (i == block) {
+  if (i == block%6) {
     board->Lcd.fillRect(xPos,yPos,w-2,h-2,WHITE);
   }
   else {
@@ -30,16 +71,31 @@ void Grid::draw(int i)
   }
 }
 
-void Grid::right() {
-  block++;
 
-  draw(block-1);
-  draw(block);
+// action upon right input
+void Grid::right() {
+  block == pages*6-1 ? 0 : block++;
+  
+  if (pageNum < block/6) {
+    pageNum++;
+    this->begin();
+  }
+  else {
+    draw(block%6-1);
+    draw(block%6);
+  }
 }
 
+// action upon left input
 void Grid::left() {
   block == 0 ? block = 0 : block--;
 
-  draw(block+1);
-  draw(block);
+  if (pageNum > block/6) {
+    pageNum--;
+    this->begin();
+  }
+  else {
+    draw(block%6+1);
+    draw(block%6);
+  }
 }

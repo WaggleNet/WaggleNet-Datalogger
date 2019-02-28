@@ -4,6 +4,8 @@ class Grid
 {
   private:
     int block;
+    int pageNum;
+    int pages;
     M5Stack* board;
 
   public:
