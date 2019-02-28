@@ -7,6 +7,7 @@ Grid::Grid(M5Stack* other)
   board = other;
   pages = 6;
   pageNum = 0;
+  recording = false;
 }
 
 void Grid::begin()
@@ -40,6 +41,16 @@ void Grid::begin()
   // Draw header and footer
   board->Lcd.fillRect(0,0,316,28,WHITE);
   board->Lcd.fillRect(0,211,316,30,WHITE);
+  board->Lcd.setTextColor(BLACK, WHITE);
+  board->Lcd.setTextFont(0);
+  board->Lcd.setTextSize(2);
+  board->Lcd.setCursor(5, 5);
+  if (recording)
+    board->Lcd.print("Currently Recording...");
+  else {
+    board->Lcd.print("Ready! Hold    to record.");
+    board->Lcd.fillRect(155,5,16,16,BLACK);
+  }
 
   // control markers
   int centerX = 320/2;
@@ -98,4 +109,9 @@ void Grid::left() {
     draw(block%6+1);
     draw(block%6);
   }
+}
+
+void Grid::record() {
+  recording ? recording = false : recording = true;
+  this->begin();
 }

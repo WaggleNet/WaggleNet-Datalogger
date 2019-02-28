@@ -3,6 +3,7 @@
 #include <Grid.h>
 
 Grid mainGrid(&M5);
+int flag = 0;
 
 void setup() {
   M5.begin();
@@ -18,4 +19,14 @@ void loop() {
     mainGrid.left();
   else if (M5.BtnC.wasReleased())
     mainGrid.right();
+  else if (M5.BtnB.pressedFor(2000) && flag == 0) {
+    mainGrid.record();
+    flag = 1;
+  }
+  else if (M5.BtnB.wasReleased() && flag == 1) {
+    flag = 0;
+  }
+  else if (M5.BtnB.wasReleased() && flag == 0) {
+    // mainGrid.select();
+  }
 }

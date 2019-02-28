@@ -6,6 +6,7 @@ class Grid
     int block;
     int pageNum;
     int pages;
+    bool recording;
     M5Stack* board;
 
   public:
@@ -16,6 +17,6 @@ class Grid
     void right();
     void left();
     // void select();
-    // void record();
+    void record();
 
 };
