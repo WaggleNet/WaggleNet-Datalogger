@@ -74,7 +74,8 @@ void Grid::draw(int i)
   int16_t h = 170/2;
 
   if (i == block%6) {
-    board->Lcd.fillRect(xPos,yPos,w-2,h-2,WHITE);
+    board->Lcd.fillRect(xPos+3,yPos+3,w-8,h-8,WHITE);
+    board->Lcd.drawRect(xPos,yPos,w-2,h-2,WHITE);
   }
   else {
     board->Lcd.fillRect(xPos,yPos,w-2,h-2,BLACK);
