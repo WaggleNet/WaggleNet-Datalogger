@@ -1,11 +1,18 @@
 #include <Arduino.h>
 #include <M5Stack.h>
 #include <Grid.h>
+#include "sensor.h"
+#include "pnpmanager.h"
 
+SensorManager manager;
 Grid mainGrid(&M5);
 int flag = 0;
 
 void setup() {
+  Serial.begin(9600);
+  delay(5000);
+  manager.begin();
+  
   M5.begin();
   M5.Lcd.clearDisplay();
   mainGrid.begin();
@@ -29,4 +36,24 @@ void loop() {
   else if (M5.BtnB.wasReleased() && flag == 0) {
     // mainGrid.select();
   }
+
 }
+
+/*
+#include <Wire.h>
+
+void setup() {
+  Wire.begin();        // join i2c bus (address optional for master)
+  Serial.begin(9600);  // start serial for output
+}
+
+void loop() {
+  Wire.requestFrom(0x68, 6);    // request 6 bytes from slave device #8
+
+  while (Wire.available()) { // slave may send less than requested
+    char c = Wire.read(); // receive a byte as character
+    Serial.print(c);         // print the character
+  }
+
+  delay(500);
+}*/

@@ -1,4 +1,5 @@
 #include "pnpsensor.h"
+#include <Esp.h>
 
 PnPSensor::PnPSensor():Sensor() {
     
@@ -144,7 +145,9 @@ void PnPSensor::handleSyscall_(uint8_t vector, uint8_t arg) {
             break;
         case 200:
             // Force restart
-            asm volatile ("  jmp 0");
+            //asm volatile ("  jmp 0");
+            // ^ this throws an error for ESP
+            ESP.restart();
             break;
         default:
             return;
