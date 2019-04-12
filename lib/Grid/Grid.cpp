@@ -7,11 +7,36 @@ Grid::Grid(M5Stack* other)
   board = other;
   pages = 6;
   pageNum = 0;
+  flag = 0;
   recording = false;
+  isGraph = false;
+}
+
+void Grid::update() {
+  board->update();
+ 
+  // if you want to use Releasefor("was released for"), use .wasReleasefor(int time) below
+  if (board->BtnA.wasReleased())
+    left();
+  else if (board->BtnC.wasReleased())
+    right();
+  else if (board->BtnB.pressedFor(2000) && flag == 0) {
+    record();
+    flag = 1;
+  }
+  else if (board->BtnB.wasReleased() && flag == 1) {
+    flag = 0;
+  }
+  else if (board->BtnB.wasReleased() && flag == 0) {
+    select();
+  }
+
+  if (isGraph) graph->updateGraph();
 }
 
 void Grid::begin()
 {
+  board->Lcd.clearDisplay();
   // Draw grid
   for (int i = 0; i < 6; i++) {
     draw(i);
@@ -86,33 +111,52 @@ void Grid::draw(int i)
 
 // action upon right input
 void Grid::right() {
-  block == pages*6-1 ? 0 : block++;
-  
-  if (pageNum < block/6) {
-    pageNum++;
-    this->begin();
-  }
-  else {
-    draw(block%6-1);
-    draw(block%6);
+  if (!isGraph) {
+    block == pages*6-1 ? 0 : block++;
+    
+    if (pageNum < block/6) {
+      pageNum++;
+      this->begin();
+    }
+    else {
+      draw(block%6-1);
+      draw(block%6);
+    }
   }
 }
 
 // action upon left input
 void Grid::left() {
-  block == 0 ? block = 0 : block--;
-
-  if (pageNum > block/6) {
-    pageNum--;
-    this->begin();
+  if (isGraph) {
+    isGraph = false;
+    delete graph;
+    begin();
   }
   else {
-    draw(block%6+1);
-    draw(block%6);
+    block == 0 ? block = 0 : block--;
+
+    if (pageNum > block/6) {
+      pageNum--;
+      this->begin();
+    }
+    else {
+      draw(block%6+1);
+      draw(block%6);
+    }
   }
 }
 
 void Grid::record() {
   recording ? recording = false : recording = true;
-  this->begin();
+  if (isGraph) {}
+  else begin();
+}
+
+void Grid::select() {
+  if (isGraph) {}
+  else {
+    isGraph = true;
+    graph = new Graph(200, 179, board);
+    graph->startGraph();
+  }
 }

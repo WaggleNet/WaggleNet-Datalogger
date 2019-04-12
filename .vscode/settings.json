@@ -1,6 +1,0 @@
-{
-    "terminal.integrated.env.osx": {
-        "PATH": "/Users/Mike/.platformio/penv/bin:/Users/Mike/.platformio/penv:/Library/Frameworks/Python.framework/Versions/3.6/bin:/anaconda3/bin:/Library/Frameworks/Python.framework/Versions/2.7/bin:/Library/Frameworks/Python.framework/Versions/3.3/bin:/usr/local/opt/python/libexec/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Developer/Tools/Panda3D:/Users/Mike/yagarto/yagarto-4.7.2/bin:/Users/Mike/yagarto/yagarto-4.7.2/tools",
-        "PLATFORMIO_CALLER": "vscode"
-    }
-}

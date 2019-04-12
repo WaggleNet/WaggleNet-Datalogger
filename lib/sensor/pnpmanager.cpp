@@ -10,16 +10,17 @@ void SensorManager::begin() {
 }
 
 void SensorManager::updateSensors() {
-    uint8_t* scanResults;
-    wireScan(0x60, 0x70, scanResults);
-    // what is the point of this
-    delete[] scanResults;
-    Serial.println("> Adding 0x62 to sensors");
-    image_sensor(0x62);
+    uint8_t scanResults[16];
+    int num_found = wireScan(0x60, 0x70, scanResults);
+    for (int i = 0; i < num_found; i++) {
+        Serial.print(F("-!>\tSTART\tIMAGING\t0x"));
+        Serial.println(scanResults[i], HEX);
+        image_sensor(scanResults[i]);
+    }
+    
 }
 
-uint8_t SensorManager::wireScan(uint8_t lower, uint8_t upper, uint8_t*& results) {
-    results = new uint8_t[32];
+uint8_t SensorManager::wireScan(uint8_t lower, uint8_t upper, uint8_t* results) {
     uint8_t error;
     uint8_t counter = 0;
     Serial.println(F("-!>\tSTART\tSCANNING"));
@@ -49,11 +50,9 @@ uint8_t SensorManager::image_sensor(uint8_t addr) {
     String fail_msg;
     bool res;
     Sensor* sensor = NULL;
-    // question : length not specified
-    res = i2c_read_reg(addr, 0, &version, 1);
+    res = i2c_read_reg(addr, 0, &version);
     // TODO: Bail
-    // question : same herere
-    res = i2c_read_reg(addr, 2, &length, 1);
+    res = i2c_read_reg(addr, 2, &length);
     // TODO: Bail
     Serial.print(F("-->\tSensor.Version\t"));
     Serial.println(version, HEX);
@@ -69,7 +68,6 @@ uint8_t SensorManager::image_sensor(uint8_t addr) {
     sensor->version = version;
     res = i2c_read_reg(addr, 1, (uint8_t*)&(sensor->type), 4);
     // TODO: Warn
-    return 0;
     for (uint8_t i = 0; i < length; i++) {
         res = i2c_read_reg(addr, 4+4*i+2, &size);
         if (!res){
@@ -125,12 +123,8 @@ bool SensorManager::deleteSensor(uint8_t index) {
 bool SensorManager::i2c_read_reg(uint8_t addr, uint8_t mar, uint8_t* data, uint8_t length) {
     Wire.beginTransmission(addr);
     Wire.write(mar);
-    Serial.println("transmission");
     Wire.endTransmission(false);
-    Serial.println("end transmission");
     auto l = Wire.requestFrom(addr, length);
-    delay(10);
-    Serial.println(l);
     if (l != length) return false;
     Serial.print("--> Data readout: 0x");
     for (uint8_t i = 0; i < length; i++) {
@@ -212,5 +206,9 @@ uint8_t SensorManager::getIndexByAddress(uint8_t address) {
     for (uint8_t i = 0; i < count_; i++) {
         if (sensors_[i]->address == address) return i;
     }
+    return count_;
+}
+
+uint8_t SensorManager::getSensorCount() {
     return count_;
 }
