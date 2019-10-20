@@ -28,6 +28,6 @@ void loop() {
   mainGrid.update();
 
   manager.collect(0);
-  manager.dumpToSerial(0);
-  delay(2000);
+  manager.interpretData(0);
+  delay(5000);
 }
