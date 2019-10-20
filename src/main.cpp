@@ -3,9 +3,9 @@
 #include <Grid.h>
 //#include <Graph.h>
 //#include "sensor.h"
-//#include "pnpmanager.h"
+#include "pnpmanager.h"
 
-//SensorManager manager;
+SensorManager manager;
 Grid mainGrid(&M5);
 //Graph mainGraph(250, 200, &M5);
 //int flag = 0;
@@ -13,12 +13,12 @@ Grid mainGrid(&M5);
 void setup() {
   Serial.begin(115200);
   //delay(5000);
-  //manager.begin();
+  manager.begin();
   
   M5.begin();
   M5.Lcd.clearDisplay();
   mainGrid.begin();
-  pinMode(36, INPUT);
+  pinMode(36, INPUT); 
   //mainGraph.startGraph();
 }
 
@@ -27,6 +27,7 @@ void loop() {
   //delay(200);
   mainGrid.update();
 
-  //manager.collect(0);
-  //manager.dumpToSerial(0);
+  manager.collect(0);
+  manager.dumpToSerial(0);
+  delay(2000);
 }
