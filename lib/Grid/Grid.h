@@ -1,6 +1,7 @@
 #include <M5Stack.h>
 #include <Graph.h>
 #include <cstdlib>
+#include <pnpmanager.h>
 
 class Grid
 {
@@ -13,6 +14,7 @@ class Grid
     bool isGraph;
     M5Stack* board;
     Graph* graph;
+    SensorManager* manager;
 
   public:
     Grid(M5Stack* other);
@@ -24,5 +26,7 @@ class Grid
     void select();
     void record();
     void update();
+    void updateSensors();
+    void drawSensorVal(int idx);
 
 };
