@@ -17,7 +17,7 @@ class Grid
     SensorManager* manager;
 
   public:
-    Grid(M5Stack* other);
+    Grid(M5Stack* other, SensorManager* sens_mng);
 
     void begin();
     void draw(int i);

@@ -1,7 +1,7 @@
 #include "Grid.h"
 #include <stdlib.h>
 
-Grid::Grid(M5Stack* other)
+Grid::Grid(M5Stack* other, SensorManager* sens_mng)
 {
   block = 0;
   board = other;
@@ -10,6 +10,8 @@ Grid::Grid(M5Stack* other)
   flag = 0;
   recording = false;
   isGraph = false;
+
+  manager = sens_mng;
 }
 
 void Grid::update() {
@@ -31,12 +33,16 @@ void Grid::update() {
     select();
   }
 
-  if (isGraph) graph->updateGraph();
+  // if (isGraph) graph->updateGraph();
+  
   updateSensors();
 }
 
 void Grid::begin()
 {
+  // Get that sensor manager goin
+  manager->begin();
+
   board->Lcd.clearDisplay();
   // Draw grid
   for (int i = 0; i < 6; i++) {
@@ -89,18 +95,20 @@ void Grid::begin()
   // L/R buttons
   board->Lcd.fillTriangle(centerX-80,centerY-8,centerX-80,centerY+8,centerX-90,centerY,BLACK);
   board->Lcd.fillTriangle(centerX+80,centerY-8,centerX+80,centerY+8,centerX+90,centerY,BLACK);
-
-  // Get that sensor manager goin
-  manager->begin();
 }
 
 void Grid::updateSensors() {
-  int sensor_count = manager->getSensorCount();
+  int sensor_count= manager->getSensorCount();
+  // Serial.println(sensor_count, HEX);
 
   // Update every sensor & output data to screen
   for(int i = 0; i < sensor_count; i++) {
     bool flag = manager->collect(i);
-    drawSensorVal(i);
+    Sensor* cur_sensor = manager->getSensor(i);
+    if (cur_sensor->hasChanged(0))  { 
+      drawSensorVal(i);
+      cur_sensor->changed(0, false);
+    }
   }
 }
 
@@ -108,9 +116,14 @@ void Grid::drawSensorVal(int idx) {
   Sensor* cur_sensor = manager->getSensor(idx);
   uint8_t data_idx = cur_sensor->getSize();
   // Might need to do idx - 1 
-  void* sensor_data = cur_sensor->getData(data_idx);
-  uint8_t type = cur_sensor->getDataType(data_idx);
+  void* sensor_data = cur_sensor->getData(0);
+  uint8_t type = cur_sensor->getDataType(0);
+  float* int_data = (float*)sensor_data;
+  Serial.println(*int_data, 4);
 
+  if (isGraph) graph->updateGraph(*int_data);
+
+  /*
   if (type & 1 && type & (1 << 1)) { // Float
     double* int_data = (double*)sensor_data;
     Serial.print(*int_data, 4);
@@ -124,7 +137,7 @@ void Grid::drawSensorVal(int idx) {
     // may need to change variable type
     unsigned int* int_data = (unsigned int*)sensor_data;
     Serial.print(*int_data, DEC);
-  }
+  }/**/
 }
 
 // Draws a tile in the grid

@@ -4,7 +4,7 @@
 class Graph
 {
     private:
-        std::list<int> points;
+        std::list<float> points;
         int _width;
         int _height;
         int x0, y0;
@@ -18,7 +18,7 @@ class Graph
         //~Graph();
 
         void startGraph();
-        void updateGraph();
+        void updateGraph(float data);
         void plotPoints();
         void displayData();
         String timeToString(int num);

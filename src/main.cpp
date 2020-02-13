@@ -5,8 +5,8 @@
 //#include "sensor.h"
 #include <pnpmanager.h>
 
-
-Grid mainGrid(&M5);
+SensorManager manager;
+Grid mainGrid(&M5, &manager);
 // Graph mainGraph(250, 200, &M5);
 //int flag = 0;
 
@@ -15,14 +15,15 @@ void setup() {
   
   M5.begin();
   M5.Lcd.clearDisplay();
-  mainGrid.begin();
   pinMode(36, INPUT); 
+  mainGrid.begin();
 }
 
 void loop() {
   // mainGraph.updateGraph();
-  //delay(200);
+  // delay(200);
   mainGrid.update();
+  // manager.collect(0);
   // manager.interpretData(0);
   // delay(5000);
 }

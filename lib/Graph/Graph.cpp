@@ -12,6 +12,7 @@ Graph::Graph(int width, int height, M5Stack* board) {
 }
 
 void Graph::startGraph() {
+    time = millis();
     _board->Lcd.clearDisplay();
     _board->Lcd.drawRect(x0, y0-_height, _width, _height, WHITE);
     // control markers
@@ -30,19 +31,15 @@ void Graph::startGraph() {
     _board->Lcd.fillTriangle(centerX+80,centerY-8,centerX+80,centerY+8,centerX+90,centerY,BLACK);
 }
 
-void Graph::updateGraph() {
-    time = millis();
+void Graph::updateGraph(float data) {
+    //int randN = 5*sin(time/100)+5;
+    auto randN = data;
+    points.push_back(randN);
+    if (points.size() > pointsSize)
+        points.pop_front();
 
-    if (time % 300 == 0) {
-        //int randN = 5*sin(time/100)+5;
-        int randN = analogRead(36)*360/4095;
-        points.push_back(randN);
-        if (points.size() > pointsSize)
-            points.pop_front();
-
-        plotPoints();
-        displayData();
-    }
+    plotPoints();
+    displayData();
 }
 
 void Graph::plotPoints() {
@@ -99,6 +96,7 @@ void Graph::displayData() {
     _board->Lcd.setCursor(230, 65);
     _board->Lcd.print("   ");
     _board->Lcd.setCursor(230, 65);
+    _board->Lcd.setTextSize(2);
     _board->Lcd.print(points.back());
 
 
@@ -115,7 +113,7 @@ void Graph::displayData() {
     _board->Lcd.print("TIME REC:");
 
     _board->Lcd.setTextColor(WHITE, BLACK);
-    _board->Lcd.setTextSize(4);
+    _board->Lcd.setTextSize(2);
     _board->Lcd.setCursor(215, 145);
     _board->Lcd.print(curMins);
     _board->Lcd.setCursor(235, 145);

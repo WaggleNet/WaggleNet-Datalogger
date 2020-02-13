@@ -5,3 +5,10 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/
+lib/sensor/sensor.h
+lib/sensor/sensor.cpp
+lib/sensor/pnpmanager.cpp
+lib/sensor/pnpmanager.h
+lib/sensor/pnpsensor.cpp
+lib/sensor/pnpsensor.h
+lib/sensor/flags.h
