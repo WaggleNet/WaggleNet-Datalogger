@@ -2,7 +2,7 @@
 
 using namespace std::placeholders;
 
-#define ROUTE(RFUNC) std::bind(&WiFiAPI::RFUNC, this)
+#define ROUTE(RFUNC) std::bind(&WiFiAPI::RFUNC, this, _1)
 
 WiFiAPI::WiFiAPI(M5Stack* m5)
     :server(80) {
@@ -25,47 +25,112 @@ String getContentType(String filename){
   return "text/plain";
 }
 
-void WiFiAPI::route_static() {
-    String path = server.uri();
+void WiFiAPI::route_static(AsyncWebServerRequest *request) {
+    String path = request->url();
     Serial.print("Serving static path: ");
     Serial.println(path);
 	if (path.endsWith("/")) path += "index.html";
 	String contentType = getContentType(path);
 	if (SPIFFS.exists(path)) {
-		auto f = SPIFFS.open(path, "r");
-		server.streamFile(f, contentType);
-		f.close();
+		auto *res = request->beginResponse(SPIFFS, path);
+        request->send(res);
 		return;
 	} else {
-        server.send(404, "text/plain", "404: Not Found");
+        request->send(404, "text/plain", "404: Not Found");
     }
 }
 
-void WiFiAPI::route_wifi_scan() {
-    // TODO
-    server.send(200, "text/plain", "todo");
+void route_main(RTE_PARAMS) {
+
 }
 
-void WiFiAPI::route_wifi_sta() {
-    // TODO
-    server.send(200, "text/plain", "todo");
+void route_wifi_sta(RTE_PARAMS) {
+    auto *response = request->beginResponseStream(RES_JSON);
+    StaticJsonDocument<128> result;
+    result["on"] = config::is_wifi_sta_on();
+    result["ssid"] = config::get(CONF_WIFI_STA_SSID);
+    result["pwd"] = config::get(CONF_WIFI_STA_PWD);
+    serializeJson(result, *response);
+    request->send(response);
 }
 
-void WiFiAPI::route_conf_name() {
-    // TODO
-    server.send(200, "text/plain", "todo");
+auto* route_wifi_sta_post = JSON_ROUTE("/api/wifi/sta") {
+    JsonObject result = json.as<JsonObject>();
+    config::set_wifi_sta_on(result["on"]);
+    config::set(CONF_WIFI_STA_SSID, result["ssid"]);
+    config::set(CONF_WIFI_STA_PWD, result["pwd"]);
+    // Always disconnect WiFi first
+    wifi.wifi_sta_disconnect();
+    if (result["on"]) wifi.wifi_sta_connect();
+    request->send(200, RES_JSON, RES_OK);
+});
+
+void route_wifi_scan(RTE_PARAMS) {
+    
 }
 
-void WiFiAPI::route_main() {
-    // TODO
-    server.send(200, "text/plain", "todo");
+void route_conf_id(RTE_PARAMS) {
+    auto *response = request->beginResponseStream(RES_JSON);
+    StaticJsonDocument<128> result;
+    result["id"] = config::get(CONF_DEVICE_ID);
+    serializeJson(result, *response);
+    request->send(response);
+}
+
+auto* route_conf_id_post = JSON_ROUTE("/api/conf/id") {
+    JsonObject result = json.as<JsonObject>();
+    config::set(CONF_DEVICE_ID, result["id"]);
+    request->send(200, RES_JSON, RES_OK);
+});
+
+void route_time_ntp(RTE_PARAMS) {
+    auto *response = request->beginResponseStream(RES_JSON);
+    StaticJsonDocument<128> result;
+    result["on"] = true;
+    result["server"] = config::get(CONF_NTP_SERVER);
+    serializeJson(result, *response);
+    request->send(response);
+}
+
+auto* route_time_ntp_post = JSON_ROUTE("/api/time/ntp") {
+    JsonObject result = json.as<JsonObject>();
+    config::set(CONF_NTP_SERVER, result["server"]);
+    request->send(200, RES_JSON, RES_OK);
+});
+
+void route_time_syncntp(RTE_PARAMS) {
+    request->send(200, RES_JSON, RES_OK);
+}
+
+void route_time_synclocal(RTE_PARAMS) {
+
+}
+
+void WiFiAPI::wifi_sta_connect(bool initial) {
+    Serial.println(F("[wifi] Attempting connection"));
+    String ssid = config::get(CONF_WIFI_STA_SSID);
+    String pwd = config::get(CONF_WIFI_STA_PWD);
+    WiFi.mode(WIFI_MODE_APSTA);
+    WiFi.begin(ssid.c_str(), pwd.c_str());
+    _sta_connected = true;
+    if (initial) retries = WIFI_STA_MAX_RETRIES;
+}
+
+void WiFiAPI::wifi_sta_disconnect() {
+    WiFi.disconnect();
+    WiFi.mode(WIFI_MODE_AP);
+    _sta_connected = false;
 }
 
 void WiFiAPI::setup_routes() {
-    server.on("/api/wifi/scan", ROUTE(route_wifi_scan));
-    server.on("/api/wifi/sta", ROUTE(route_wifi_sta));
-    server.on("/api/conf/name", ROUTE(route_conf_name));
-    server.on("/", ROUTE(route_main));
+    server.on("/api/wifi/scan", HTTP_GET, route_wifi_scan);
+    server.on("/api/wifi/sta", HTTP_GET, route_wifi_sta);
+    server.on("/api/conf/id", HTTP_GET, route_conf_id);
+    server.on("/api/time/ntp", HTTP_GET, route_time_ntp);
+    server.on("/api/time/ntpsync", HTTP_GET, route_time_syncntp);
+    server.on("/api/time/sync", HTTP_GET, route_time_synclocal);
+    server.on("/", route_main);
+    server.addHandler(route_wifi_sta_post);
     server.onNotFound(ROUTE(route_static));
     server.begin();
 }
@@ -82,5 +147,30 @@ void WiFiAPI::begin() {
 }
 
 void WiFiAPI::update() {
-    server.handleClient();
+    /* Check and maintain wifi connection */
+    switch (WiFi.status()) {
+        case WL_CONNECT_FAILED:
+        case WL_CONNECTION_LOST:
+        case WL_NO_SSID_AVAIL:
+        // At connection failure, retry
+        // If WiFi connection fails, decrement retries
+        if (_sta_connected) {
+            retries --;
+            Serial.print(F("[wifi] STA Failed connection - retries left: "));
+            Serial.println(retries);
+            wifi_sta_connect(false);
+        }
+        break;
+
+        case WL_CONNECTED:
+        // If WiFi connection succeeds, reset retries
+        retries = WIFI_STA_MAX_RETRIES;
+        break;
+    }
+    // At exhaustion of retries, die
+    if (!retries) {
+        config::set_wifi_sta_on(false);
+        wifi_sta_disconnect();
+    }
 }
+ 
