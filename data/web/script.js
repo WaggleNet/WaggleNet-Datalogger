@@ -3,7 +3,7 @@ function getFieldByAPI(url, fields) {
     for (const k in fields) {
       const kk = '#' + k;
       if ($(kk).attr('type') === 'checkbox') {
-        $(kk).prop('checked', r[fields[k]])
+        $(kk).bootstrapSwitch('state', r[fields[k]])
       } else {
         $(kk).val(r[fields[k]])
       }
