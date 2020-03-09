@@ -12,7 +12,7 @@
 SensorManager manager;
 Grid mainGrid(&M5, &manager);
 WiFiAPI wifi(&M5);
-Timekeeper time(&M5);
+Timekeeper timekeeper(&M5);
 
 // Graph mainGraph(250, 200, &M5);
 //int flag = 0;

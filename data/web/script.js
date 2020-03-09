@@ -35,6 +35,21 @@ function setFieldByAPI(url, fields) {
   postJSON(url, data, (r)=>{})
 }
 
+function setTimeNow() {
+  const seconds = Math.trunc(Date.now() / 1000);
+  console.log("Current time:", seconds);
+  postJSON('/api/time/sync', {now: seconds}, (r)=>{
+    getTimeNow()
+  })
+}
+
+function getTimeNow() {
+  fetch('/api/time/now').then(r=>r.json()).then(r=>{
+    const d = new Date(r.now * 1000)
+    $('#disp-time-now').text(d.toString())
+  })
+}
+
 const wifiStaMapping = {
   'sw-wifi-on': 'on',
   'input-wifi-ssid': 'ssid',
@@ -80,11 +95,13 @@ $(document).ready(function() {
   $('#btn-wifi-save').click(saveWifi)
   $('#btn-time-ntp-save').click(saveTimeNtp)
   $('#btn-deviceid-save').click(saveDeviceId)
+  $('#btn-time-sync').click(setTimeNow)
   // Setup action button behavior
   $('.actionbtn').click(function(e) {
     e.preventDefault();
     fetch(this.data('url')).then(r=>loadFieldValues())
   })
+  getTimeNow();
   // Load initial values
   loadFieldValues()
 })

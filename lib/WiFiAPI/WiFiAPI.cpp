@@ -1,4 +1,5 @@
 #include "WiFiAPI.h"
+#include "Timekeeper.h"
 
 using namespace std::placeholders;
 
@@ -92,9 +93,18 @@ void route_time_ntp(RTE_PARAMS) {
     request->send(response);
 }
 
+void route_time_now(RTE_PARAMS) {
+    auto *response = request->beginResponseStream(RES_JSON);
+    StaticJsonDocument<128> result;
+    result["now"] = (uint32_t)now();
+    serializeJson(result, *response);
+    request->send(response);
+}
+
 auto* route_time_ntp_post = JSON_ROUTE("/api/time/ntp") {
     JsonObject result = json.as<JsonObject>();
     config::set(CONF_NTP_SERVER, result["server"]);
+    timekeeper.updateNTPSettings();
     request->send(200, RES_JSON, RES_OK);
 });
 
@@ -102,9 +112,12 @@ void route_time_syncntp(RTE_PARAMS) {
     request->send(200, RES_JSON, RES_OK);
 }
 
-void route_time_synclocal(RTE_PARAMS) {
-
-}
+auto* route_time_synclocal_post = JSON_ROUTE("/api/time/sync") {
+    JsonObject result = json.as<JsonObject>();
+    time_t now = result["now"];
+    setTime(now);
+    request->send(200, RES_JSON, RES_OK);
+});
 
 void WiFiAPI::wifi_sta_connect(bool initial) {
     Serial.println(F("[wifi] Attempting connection"));
@@ -127,10 +140,11 @@ void WiFiAPI::setup_routes() {
     server.on("/api/wifi/sta", HTTP_GET, route_wifi_sta);
     server.on("/api/conf/id", HTTP_GET, route_conf_id);
     server.on("/api/time/ntp", HTTP_GET, route_time_ntp);
+    server.on("/api/time/now", HTTP_GET, route_time_now);
     server.on("/api/time/ntpsync", HTTP_GET, route_time_syncntp);
-    server.on("/api/time/sync", HTTP_GET, route_time_synclocal);
     server.on("/", route_main);
     server.addHandler(route_wifi_sta_post);
+    server.addHandler(route_time_synclocal_post);
     server.onNotFound(ROUTE(route_static));
     server.begin();
 }
