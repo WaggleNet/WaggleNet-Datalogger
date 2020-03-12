@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>WNDataLogger</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel='stylesheet' href='/libs/bootstrap-switch.min.css'>
+  <link rel='stylesheet' href='/libs/bootstrap.min.css'>
+  <link rel='stylesheet' href='/web/style.css'>
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<header></header>
+<main>
+  <div class="settings-section">
+    <h3>Wi-Fi
+      <input class="form-control" id="sw-wifi-on" type="checkbox" data-size="mini" data-handle-width="22"/>
+    </h3>
+    <form>
+      <div class="form-group">
+        <label>Hotspot SSID</label>
+        <input class="form-control" id="input-wifi-ssid"/>
+      </div>
+      <div class="form-group">
+        <label>Hotspot Password</label>
+        <input class="form-control" id="input-wifi-pwd"/>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary" id="btn-wifi-save">Save & Connect</button>
+      </div>
+    </form>
+  </div>
+  <div class="settings-section">
+    <h3>Time</h3>
+    <h4>Sync with Internet
+      <input class="form-control" id="sw-ntp-on" type="checkbox" data-size="mini" data-handle-width="22"/>
+    </h4>
+    <form>
+      <div class="form-group">
+        <input class="form-control" placeholder="Time Server" id="input-time-ntp"/>
+      </div>
+      <div class="form-group">
+        <div class="btn-group">
+          <button class="btn btn-primary" id="btn-time-ntp-save">Save</button>
+          <button class="btn btn-success actionbtn" id="btn-time-ntp-sync" data-url="/api/time/ntpsync">Sync Now</button>
+        </div>
+      </div>
+    </form>
+    <h4>Datalogger Clock</h4>
+    <div class="form-group">
+      <p style="font-size: 36px;" id="disp-time-now">2016-2-3 12:19</p>
+      <button class="btn btn-primary actionbtn" id="btn-time-sync" data-url="/api/time/sync">Sync with this device</button>
+    </div>
+  </div>
+  <div class="settings-section">
+    <h3>Identification</h3>
+    <form>
+      <div class="form-group">
+        <label>Device ID</label>
+        <input class="form-control" id="input-deviceid"/>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary" id="btn-deviceid-save">Save</button>
+      </div>
+    </form>
+  </div>
+</main>
+<!-- partial -->
+  <script src='/libs/jquery.min.js'></script>
+  <script src='/libs/bootstrap-switch.min.js'></script>
+  <script src='/web/script.js'></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+body {
+  background-color: #222;
+  display: -webkit-box;
+  display: flex;
+  color: white;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+          flex-direction: column;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+header {
+  -webkit-box-flex: 0;
+          flex-grow: 0;
+  background-color: #333;
+  height: 50px;
+}
+
+main {
+  -webkit-box-flex: 1;
+          flex-grow: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.form-group button.btn, .form-group .btn-group {
+  width: 100%;
+}
+
+.bootstrap-switch {
+  border-color: rgba(160, 160, 160, 0.3);
+}
+.bootstrap-switch:not(first-child) {
+  margin-left: 10px;
+}
