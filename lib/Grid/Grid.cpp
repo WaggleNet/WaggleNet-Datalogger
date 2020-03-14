@@ -100,15 +100,15 @@ void Grid::begin()
 void Grid::updateSensors() {
   int sensor_count= manager->getSensorCount();
   // Serial.println(sensor_count, HEX);
+  // Just a test statement below
+  sensor_count = 1;
 
   // Update every sensor & output data to screen
   for(int i = 0; i < sensor_count; i++) {
     bool flag = manager->collect(i);
     Sensor* cur_sensor = manager->getSensor(i);
-    if (cur_sensor->hasChanged(0))  { 
-      drawSensorVal(i);
-      cur_sensor->changed(0, false);
-    }
+    drawSensorVal(i);
+    cur_sensor->changed(0, false);
   }
 }
 
@@ -116,12 +116,34 @@ void Grid::drawSensorVal(int idx) {
   Sensor* cur_sensor = manager->getSensor(idx);
   uint8_t data_idx = cur_sensor->getSize();
   // Might need to do idx - 1 
-  void* sensor_data = cur_sensor->getData(0);
-  uint8_t type = cur_sensor->getDataType(0);
-  float* int_data = (float*)sensor_data;
-  Serial.println(*int_data, 4);
 
-  if (isGraph) graph->updateGraph(*int_data);
+  for (int i = 0; i < data_idx; i++) {
+    void* sensor_data = cur_sensor->getData(i);
+    uint8_t type = cur_sensor->getDataType(i);
+    float* int_data = (float*)sensor_data;
+    // Serial.println(*int_data, 4);
+    Serial.println(data_idx, HEX);
+    Serial.println(idx, HEX);
+    Serial.println(graph_pos, HEX);
+    Serial.println();
+
+    if (isGraph && graph_pos == i+idx) graph->updateGraph(*int_data);
+    else if(!isGraph) drawSensorValGrid(*int_data, idx+i);
+  }
+}
+
+void Grid::drawSensorValGrid(float data, int idx) {
+  int16_t xPos = (320/3)*(idx%3);
+  int16_t yPos = 30+(170/2)*(idx/3);
+  int16_t w = 320/3;
+  int16_t h = 170/2;
+
+  board->Lcd.setTextFont(0);
+  board->Lcd.setTextSize(2);
+  board->Lcd.setCursor(xPos+5, yPos+5);
+
+  board->Lcd.print(data);
+}
 
   /*
   if (type & 1 && type & (1 << 1)) { // Float
@@ -138,7 +160,7 @@ void Grid::drawSensorVal(int idx) {
     unsigned int* int_data = (unsigned int*)sensor_data;
     Serial.print(*int_data, DEC);
   }/**/
-}
+
 
 // Draws a tile in the grid
 void Grid::draw(int i)
@@ -147,6 +169,7 @@ void Grid::draw(int i)
   int16_t yPos = 30+(170/2)*(i/3);
   int16_t w = 320/3;
   int16_t h = 170/2;
+  
 
   if (i == block%6) {
     board->Lcd.fillRect(xPos+3,yPos+3,w-8,h-8,WHITE);
@@ -206,6 +229,7 @@ void Grid::select() {
   if (isGraph) {}
   else {
     isGraph = true;
+    graph_pos = block;
     graph = new Graph(200, 179, board);
     graph->startGraph();
   }

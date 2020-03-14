@@ -12,6 +12,7 @@ class Grid
     int flag;
     bool recording;
     bool isGraph;
+    int graph_pos;
     M5Stack* board;
     Graph* graph;
     SensorManager* manager;
@@ -19,7 +20,7 @@ class Grid
   public:
     Grid(M5Stack* other, SensorManager* sens_mng);
 
-    void begin();
+    void begin(); 
     void draw(int i);
     void right();
     void left();
@@ -28,5 +29,6 @@ class Grid
     void update();
     void updateSensors();
     void drawSensorVal(int idx);
+    void drawSensorValGrid(float data, int idx);
 
 };

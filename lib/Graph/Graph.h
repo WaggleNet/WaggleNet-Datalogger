@@ -21,5 +21,6 @@ class Graph
         void updateGraph(float data);
         void plotPoints();
         void displayData();
+        bool checkTime(int threshold);
         String timeToString(int num);
 };

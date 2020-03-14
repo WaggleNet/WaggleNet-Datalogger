@@ -7,12 +7,20 @@ Graph::Graph(int width, int height, M5Stack* board) {
     x0 = 0;
     y0 = 30+_height;
     std::srand(width);
-    pointsSize = 25;
+    pointsSize = 50;
     startTime = millis();
 }
 
-void Graph::startGraph() {
+bool Graph::checkTime(int threshold) {
     time = millis();
+    if (time - startTime > threshold) {
+        startTime = time;
+        return true;
+    }
+    else return false;
+}
+
+void Graph::startGraph() {
     _board->Lcd.clearDisplay();
     _board->Lcd.drawRect(x0, y0-_height, _width, _height, WHITE);
     // control markers
@@ -33,7 +41,7 @@ void Graph::startGraph() {
 
 void Graph::updateGraph(float data) {
     //int randN = 5*sin(time/100)+5;
-    auto randN = data;
+    float randN = data;
     points.push_back(randN);
     if (points.size() > pointsSize)
         points.pop_front();
@@ -43,8 +51,8 @@ void Graph::updateGraph(float data) {
 }
 
 void Graph::plotPoints() {
-    int max;
-    int min;
+    float max;
+    float min;
     double scale;
 
     _board->Lcd.fillRect(x0+1, y0-_height+1, _width-2, _height-2, BLACK);
@@ -72,7 +80,7 @@ void Graph::plotPoints() {
         y_pos = (*it - min)*scale+5;
         
         if (x_pos > 0) {
-            _board->Lcd.drawCircle(x0+x_pos, y0-y_pos, 2, WHITE);
+            // _board->Lcd.drawCircle(x0+x_pos, y0-y_pos, 2, WHITE);
             _board->Lcd.drawLine(x0+x_pos-_width/pointsSize, y0-old_y, x0+x_pos, y0-y_pos, WHITE);
         }
 
