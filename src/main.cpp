@@ -1,20 +1,24 @@
 #include <Arduino.h>
 #include <M5Stack.h>
 #include <pnpmanager.h>
-#include <UserInterface.h>
+#include "UserInterface.h"
+#include "GridView.h"
+#include "apps.h"
 
 
 UserInterface ui(&M5);
-// Graph mainGraph(250, 200, &M5);
-//int flag = 0;
 
 void setup() {
   Serial.begin(115200);
 
   M5.begin();
   M5.Lcd.clearDisplay();
-  ui.begin();
   pinMode(36, INPUT);
+
+  // Initialize all the views
+  auto* gridView = new GridView(&ui);
+  ui.addApp((View*)&gridView);
+  ui.begin(APP_VIEW_GRID);
 }
 
 void loop() {

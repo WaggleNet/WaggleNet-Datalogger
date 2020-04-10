@@ -1,7 +1,9 @@
 #pragma once
-#include <UserInterface.h>
+#include "UserInterface.h"
 
 class GridView : public View {
+    public:
+    GridView(UserInterface* ui_): View(ui_) {};
     void begin();
     void update();
     void end();
@@ -16,6 +18,6 @@ class GridView : public View {
     void right();
     void record();
     void select();
-    UserInterface* ui;
+
     int flag;
 };

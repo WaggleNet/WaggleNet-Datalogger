@@ -1,25 +1,27 @@
 #include "GridView.h"
 
 void GridView::handleKeypress() {
-    board->update();
+  // FIXME: Handle here? Or move it to the UI
+  board->update();
 
-    if (board->BtnA.wasReleased())
-        left();
-    else if (board->BtnC.wasReleased())
-        right();
-    else if (board->BtnB.pressedFor(2000) && flag == 0) {
-        record();
-        flag = 1;
-    }
-    else if (board->BtnB.wasReleased() && flag == 1) {
-        flag = 0;
-    }
-    else if (board->BtnB.wasReleased() && flag == 0) {
-        select();
-    }
+  if (board->BtnA.wasReleased())
+      left();
+  else if (board->BtnC.wasReleased())
+      right();
+  else if (board->BtnB.pressedFor(2000) && flag == 0) {
+      record();
+      flag = 1;
+  }
+  else if (board->BtnB.wasReleased() && flag == 1) {
+      flag = 0;
+  }
+  else if (board->BtnB.wasReleased() && flag == 0) {
+      select();
+  }
 }
 
 void GridView::update() {
+  // FIXME: Ditto
   handleKeypress();
 }
 
@@ -128,4 +130,8 @@ void GridView::record() {
 }
 
 void GridView::select() {
+}
+
+void GridView::end() {
+  // TODO: Erase the corresponding screen area
 }
