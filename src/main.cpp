@@ -7,6 +7,7 @@
 
 
 UserInterface ui(&M5);
+M5Stack* board = &M5;
 
 void setup() {
   Serial.begin(115200);
@@ -16,15 +17,16 @@ void setup() {
   pinMode(36, INPUT);
 
   // Initialize all the views
+  Serial.print((long)&M5, HEX);
   auto* gridView = new GridView(&ui);
-  ui.addApp((View*)&gridView);
+  ui.addApp((View*)gridView);
   ui.begin(APP_VIEW_GRID);
 }
 
 void loop() {
   // mainGraph.updateGraph();
   //delay(200);
-  ui.update();
+  // ui.update();
   // manager.interpretData(0);
   // delay(5000);
 }

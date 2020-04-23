@@ -18,7 +18,7 @@ class View {
     virtual void handleKeypress() = 0;
     UserInterface* ui;
 
-    M5Stack* board;
+    // M5Stack* board;
 };
 
 class UserInterface {

@@ -1,5 +1,7 @@
 #include "GridView.h"
 
+extern M5Stack* board;
+
 void GridView::handleKeypress() {
   // FIXME: Handle here? Or move it to the UI
   board->update();
@@ -27,6 +29,7 @@ void GridView::update() {
 
 void GridView::begin()
 {
+  Serial.print("yoooo");
   board->Lcd.clearDisplay();
   // Draw grid
   for (int i = 0; i < 6; i++) {
