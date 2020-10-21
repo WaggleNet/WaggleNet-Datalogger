@@ -1,0 +1,128 @@
+struct Datapoint {
+    float value;
+    float millisOffset;
+}
+class SensorEntry {
+    public:
+    // Identifying features
+    uint8_t sensorAddr;
+    uint8_t fieldId;
+    // Display features
+    String dataType;
+    String name;
+    String unit;
+    String curValue;
+    bool graphable = true;
+    // Convenience getters
+    Datapoint& getCurrentEntry();
+    void addPoint(float data, uint32_t timestamp);
+    Datapoint buf[RING_BUFFER_SIZE];
+    uint16_t bufStart = 0;
+    uint16_t bufSize = 0;
+    private:
+    sensor_: Sensor*;
+}
+/*
+void writeToRing(data) {
+    if (bufSize >= RING_BUFFER_SIZE) {
+        buf[bufStart] = data;
+        bufStart = (bufStart + 1) % RING_BUFFER_SIZE;
+    } else {
+        //TODO
+    }
+}
+*/
+class Collector {
+    public:
+    void begin();
+    void update();
+    PNPmanager manager;
+    // Defining stuff
+    std::map<uint8_t, Sensor*> addrToSensor;
+    std::list<SensorEntry> entries*;
+    void syncEntriesWithManager(); // Go through "Sensor"'s in PNPManager, map sensor.addr to sensorAddrToEntry
+    void collectEntries();
+    /*
+        for (i in numEntries) {
+            auto& entry = entries*[i];
+            Sensor& sensor = addrToSensor[entry.sensorAddr];
+            if (!sensor.changed(entry.fieldId)) {
+                // TODO
+                float data = magic.snakeOil(sensor.getData(entry.fieldId));
+                entry.addPoint(data, millis());
+                entry.curValue = magic.snakeOilStr(sensor.getData(entry.fieldId));
+            }
+        }
+    */
+    private:
+    uint32_t last_collect_;
+}
+class UserInterface {
+    public:
+    void begin();
+    void update();
+    // Handling keyboard
+    // Handling redraw
+    View* permanentViews;
+    View* activeView = NULL;
+    void enterGridView(int page);  // new View here, pass to switchView
+    void enterGraphView(SensorEntry* entry);
+    private:
+    void switchView(View* newView);
+    /*
+        if (activeView) {
+            activeView->end();
+            delete activeView;
+        }
+        activeView = newView;
+        newView->begin();
+    */
+    uint8_t lastGraphViewPage = 0;
+}
+class View {
+    virtual void begin();
+    virtual void update();
+    virtual void end();
+    virtual void handleKeypress();
+}
+class GridView {
+    void begin();
+    void update();
+    void end();
+    void draw_();
+    /*
+        drawGridlines();
+        int currentCell = curPage * 6;
+        for (i = currentCell -> min(collector.entries.count(), currentCell + 6)) {
+            entry = collector.entries[i];
+            draw(entry.name)
+            draw2(entry.curValue)
+        }
+    */
+    void handleKeypress();
+    /* MIDDLE BUTTON----
+        int idx = curPage * 6 + curCell;
+        SensorEntry* entry= &(collector.entries[idx]);
+        ui.entergraphView(entry);
+    */
+    uint8_t totalPages(); // f(sensor count)
+    int8_t curPage = 0;
+    uint8_t curCell;
+    private:
+    UserInterface& ui; 
+}
+class GraphView {
+    public:
+    void begin();  // draws the frame
+    void update(); // draw the graph and value
+    void end();
+    void handleKeypress(); // Back button
+    /* BACK BUTTON----
+        ui.enterGridView();
+    */
+    Entry* entry;
+}
+class StatusbarView {
+    void begin();
+    void update();
+}

@@ -1,45 +1,40 @@
 #include <Arduino.h>
 #include <M5Stack.h>
-#include <Grid.h>
-//#include <Graph.h>
-//#include "sensor.h"
 #include <pnpmanager.h>
+#include "UserInterface.h"
+#include "GridView.h"
+#include "apps.h"
 
 #include "Config.h"
 #include "WiFiAPI.h"
 #include "Timekeeper.h"
 
 SensorManager manager;
-Grid mainGrid(&M5, &manager);
 WiFiAPI wifi(&M5);
 Timekeeper timekeeper(&M5);
 
-// Graph mainGraph(250, 200, &M5);
-//int flag = 0;
+UserInterface ui(&M5);
+auto* gridView = new GridView(&ui);
+GridView mainGrid(&ui);
+M5Stack* board = &M5;
 
 void setup() {
   Serial.begin(115200);
-  
+
   M5.begin();
   M5.Lcd.clearDisplay();
-  pinMode(36, INPUT); 
-  config::begin();
-  wifi.begin();
-  
-  // Start the GUI
-  mainGrid.begin();
+  pinMode(36, INPUT);
 
-  // Speaker shutup
-  M5.Speaker.end();
-  dacWrite(SPEAKER_PIN, 0);
+  // Initialize all the views
+  Serial.print((long)&M5, HEX);
+  ui.addApp((View*)gridView);
+  ui.begin(APP_VIEW_GRID);
 }
 
 void loop() {
   // mainGraph.updateGraph();
-  // delay(200);
-  mainGrid.update();
-  wifi.update();
-  // manager.collect(0);
+  //delay(200);
+  ui.update();
   // manager.interpretData(0);
   // delay(5000);
 }
