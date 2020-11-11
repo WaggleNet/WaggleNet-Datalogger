@@ -7,16 +7,16 @@ UserInterface::UserInterface(M5Stack* stack)
 
 void UserInterface::begin(int defaultApp) {
     Serial.print("hello");
-    activeAppView = defaultApp;
-    Serial.print((long)appViews[defaultApp], HEX);
-    appViews[defaultApp]->begin();
+    // activeAppView = defaultApp;
+    Serial.print((long)appViews.back(), HEX);
+    appViews.back()->begin();
     // for (auto const& view: widgetViews) {
         // view->begin();
     // }
 }
 
 void UserInterface::update() {
-    appViews[activeAppView]->update();
+    appViews.back()->update();
     // TODO: Handle keypress here?
     // How about holds?
 }

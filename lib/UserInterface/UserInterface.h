@@ -32,7 +32,7 @@ class UserInterface {
     vector<View*> widgetViews;
     /* Apps are views only active one at a time */
     vector<View*> appViews;
-    int activeAppView = -1; // Default -1 for protection
+    // int activeAppView = -1; // Default -1 for protection
     void addWidget(View* view_);
     void addApp(View* view_);
     void switchApp(int8_t view_idx);
