@@ -1,0 +1,3 @@
+[submodule "WaggleNet_PnP"]
+	path = WaggleNet_PnP
+	url = https://github.com/WaggleNet/WaggleNet_PnP
