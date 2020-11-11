@@ -11,7 +11,7 @@ class GridView : public View {
     void handleKeypress();
     int8_t totalPages(); // f(sensor count)
     int8_t curPage = 0;
-    uint8_t curCell;
+    uint8_t curCell = 0;
     uint8_t pages = 6;
     private:
     void left();
