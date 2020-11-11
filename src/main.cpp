@@ -26,7 +26,7 @@ void setup() {
 void loop() {
   // mainGraph.updateGraph();
   //delay(200);
-  // ui.update();
+  ui.update();
   // manager.interpretData(0);
   // delay(5000);
 }
