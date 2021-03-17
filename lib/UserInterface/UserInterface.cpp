@@ -16,13 +16,20 @@ void UserInterface::begin(int defaultApp) {
 }
 
 void UserInterface::update() {
-    appViews.back()->update();
-    // TODO: Handle keypress here?
-    // How about holds?
+    // If value 1 is returned, then we know program is terminated
+    int return_val = appViews.back()->update();
+    // Remove current program if it has terminated
+    if (return_val == 1) {
+        appViews.pop_back();
+        // Restart old program
+        appViews.back()->begin();
+    }
 }
 
 void UserInterface::addApp(View* view_) {
+    Serial.print("Adding app");
     appViews.push_back(view_);
+    appViews.back()->begin();
 }
 
 void UserInterface::addWidget(View* view_) {

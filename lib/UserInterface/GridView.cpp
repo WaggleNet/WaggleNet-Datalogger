@@ -1,8 +1,13 @@
 #include "GridView.h"
+#include "GraphView.h"
 
 extern M5Stack* board;
 
-void GridView::handleKeypress() {
+GridView::GridView(UserInterface* ui_): View(ui_) {
+  flag = 0;
+};
+
+int GridView::handleKeypress() {
   // FIXME: Handle here? Or move it to the UI
   board->update();
 
@@ -20,11 +25,14 @@ void GridView::handleKeypress() {
   else if (board->BtnB.wasReleased() && flag == 0) {
       select();
   }
+
+  return 0;
 }
 
-void GridView::update() {
+int GridView::update() {
   // FIXME: Ditto
   handleKeypress();
+  return 0;
 }
 
 void GridView::begin()
@@ -133,8 +141,12 @@ void GridView::record() {
 }
 
 void GridView::select() {
+  Serial.print("Hit select");
+  GraphView* new_GV = new GraphView(ui);
+  ui->addApp(new_GV);
 }
 
-void GridView::end() {
+int GridView::end() {
   // TODO: Erase the corresponding screen area
+  return 0;
 }
