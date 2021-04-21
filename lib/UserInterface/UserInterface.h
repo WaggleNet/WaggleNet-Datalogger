@@ -13,9 +13,9 @@ class View {
     public:
     View(UserInterface* ui_);
     virtual void begin() = 0;
-    virtual void update() = 0;
-    virtual void end() = 0;
-    virtual void handleKeypress() = 0;
+    virtual int update() = 0;
+    virtual int end() = 0;
+    virtual int handleKeypress() = 0;
     UserInterface* ui;
 
     // M5Stack* board;

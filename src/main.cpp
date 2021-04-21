@@ -3,11 +3,13 @@
 #include <pnpmanager.h>
 #include "UserInterface.h"
 #include "GridView.h"
+#include "GraphView.h"
 #include "apps.h"
 
 
 UserInterface ui(&M5);
 auto* gridView = new GridView(&ui);
+auto* graphView = new GraphView(&ui);
 M5Stack* board = &M5;
 
 void setup() {

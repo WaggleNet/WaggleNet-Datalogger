@@ -3,12 +3,12 @@
 
 class GridView : public View {
     public:
-    GridView(UserInterface* ui_): View(ui_) {};
+    GridView(UserInterface* ui_);
     void begin();
-    void update();
-    void end();
+    int update();
+    int end();
     void draw(int i);
-    void handleKeypress();
+    int handleKeypress();
     int8_t totalPages(); // f(sensor count)
     int8_t curPage = 0;
     uint8_t curCell = 0;
