@@ -38,7 +38,9 @@ void Collector::begin(){
 }
 
 void Collector::update(){
+    // Update sensor list
     manager->updateSensors();
+
 }
 
 void Collector::syncEntriesWithManager(){
@@ -57,7 +59,10 @@ void Collector::syncEntriesWithManager(){
 
 }
 void Collector::collectEntries(){
-    //I'm pretty sure this is collecting data. 
-    //TODO: look through pnpsensor and see what's going on in there
-    //then make this
+    // Go through all sensors and collect their data
+    uint8_t num_sensors = manager->getSensorCount();
+
+    for (int i = 0; i < num_sensors; i++) {
+        manager->collect(i);
+    }
 }
